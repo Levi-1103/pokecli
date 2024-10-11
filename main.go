@@ -1,7 +1,14 @@
 package main
 
+type config struct {
+	nextLocationAreaURL     *string
+	previousLocationAreaURL *string
+}
+
 func main() {
 
-	startRepl()
+	var cfg config
+
+	startRepl(&cfg)
 
 }
