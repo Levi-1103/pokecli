@@ -96,5 +96,4 @@ func DisplayPokemon(areaName string) (LocationInfo, error) {
 	}
 
 	return location, nil
-
 }
