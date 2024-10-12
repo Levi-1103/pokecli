@@ -356,3 +356,19 @@ func InspectPokemon(pokemonName string, p Pokedex) error {
 
 	return nil
 }
+
+func ShowPokedex(p Pokedex) error {
+	if len(p.pokedex) == 0 {
+		return fmt.Errorf("pokedex is empty")
+	}
+	fmt.Println()
+	fmt.Println("Your Pokedex")
+	fmt.Println("-----")
+	fmt.Println()
+	for key := range p.pokedex {
+		fmt.Println("- " + key)
+	}
+	fmt.Println()
+
+	return nil
+}
