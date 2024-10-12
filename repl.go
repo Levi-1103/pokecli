@@ -11,8 +11,6 @@ func startRepl(cfg *config) {
 
 	fmt.Println("---Launched Pokedex---")
 
-	// var config Config
-
 	scanner := bufio.NewScanner(os.Stdin)
 	for {
 		fmt.Print("pokedex > ")

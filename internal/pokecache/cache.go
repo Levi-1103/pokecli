@@ -1,13 +1,12 @@
 package pokecache
 
 import (
-	"sync"
 	"time"
 )
 
 type Cache struct {
 	cache map[string]cacheEntry
-	mu    sync.Mutex
+	// mu    *sync.Mutex
 }
 
 type cacheEntry struct {
@@ -16,43 +15,45 @@ type cacheEntry struct {
 }
 
 func (c *Cache) Add(key string, val []byte) {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-	c.cache[key] = cacheEntry{time.Now(), val}
+
+	c.cache[key] = cacheEntry{createdAt: time.Now().UTC(), val: val}
 }
 
 func (c *Cache) Get(key string) ([]byte, bool) {
-	c.mu.Lock()
-	defer c.mu.Unlock()
 
 	if val, ok := c.cache[key]; ok {
-		return val.val, true
+		return val.val, ok
 	}
 
 	return []byte{}, false
 
 }
 
-func (c *Cache) reapLoop(interval time.Duration) {
-	c.mu.Lock()
-	defer c.mu.Unlock()
+func (c *Cache) reap(interval time.Duration) {
 
-	ticker := time.NewTicker(interval)
+	timeAgo := time.Now().UTC().Add(-interval)
 
-	// go func() {
-	// 	for ticker.C {
-	// 		for _, entry  := range c.cache {
-	// 			if entry.createdAt.
-	// 		}
-	// 	}
-	// }()
+	for key, val := range c.cache {
+		if val.createdAt.Before(timeAgo) {
+			delete(c.cache, key)
+		}
+	}
 
 }
 
-func NewCache(interval time.Duration) {
+func (c *Cache) reapLoop(interval time.Duration) {
+	ticker := time.NewTicker(interval)
+	for range ticker.C {
+		c.reap(interval)
+	}
+}
 
-	cache := Cache{}
+func NewCache(interval time.Duration) Cache {
 
-	reapLoop(interval)
+	c := Cache{
+		cache: make(map[string]cacheEntry),
+	}
+	go c.reapLoop(interval)
+	return c
 
 }
